@@ -25,19 +25,21 @@ const kampusSchema = mongoose.Schema({
     prodi :[
         {
             type : mongoose.Schema.Types.ObjectId,
-            ref : "Prodi"
+            ref : "Prodi",
+            required : true
         }
     ],
     pengguna : [
         {
             type : mongoose.Schema.Types.ObjectId,
-            ref : "User"
+            ref : "User",
+            
         }
     ],
     akreditasi : {
-        type: String,
-        enum: ['Unggul', 'Baik Sekali', 'Baik', 'Tidak Terakreditasi', 'Terakreditasi Sementara'], 
-        required: true
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "akreditasi",
+        required : true
     },
     status : {
         type : String,

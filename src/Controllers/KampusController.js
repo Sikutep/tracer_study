@@ -71,7 +71,7 @@ exports.editKampus = async (req, res) => {
         }
 
         const dataKampus = {kode_pt, psdku, prodi, pengguna, akreditasi, status}
-        const updateKampus = await Kampus.findIdAndUpdate(kampusId, dataKampus, { new : true, runValidators : true })
+        const updateKampus = await Kampus.findByIdAndUpdate(kampusId, dataKampus, { new : true, runValidators : true })
 
         if(!updateKampus) return res.status(404).json({
             message : "Failed to edit Kampus"

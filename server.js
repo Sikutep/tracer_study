@@ -9,10 +9,11 @@ const prodiRoute = require('./src/Routes/ProdiRoutes');
 const KampusRoutes = require('./src/Routes/KampusRoutes');
 const BekerjaRouter = require('./src/Routes/BekerjaRoutes');
 const WirausahaRoutes = require('./src/Routes/WirausahaRoutes');
+const MahasiswaRoutes = require('./src/Routes/MahasiswaRoutes');
 
 
 // Mongo DB Connections
-mongoose.connect("mongodb://localhost:27017/DB_Tracer", {
+mongoose.connect("mongodb://localhost:27017/DBTracer", {
     // useNewUrlParser: true,
     // useUnifiedTopology: true,
 }).then(response=>{
@@ -31,8 +32,10 @@ app.use(express.json())
 app.use('/users', UserRouter)
 app.use('/prodi', prodiRoute)
 app.use('/kampus', KampusRoutes)
-app.use('/kerja', BekerjaRouter)
-app.use('/wirausaha', WirausahaRoutes)
+// app.use('/kerja', BekerjaRouter)
+// app.use('/wirausaha', WirausahaRoutes)
+
+app.use('/mahasiswa', MahasiswaRoutes)
 
 
 // Connection

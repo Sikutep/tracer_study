@@ -1,4 +1,5 @@
 const Prodi = require('../Models/ProdiModel')
+const Akreditasi = require('../Models/Akreditasimodel')
 
 exports.getAll = async (req, res) => {
     try {
@@ -120,6 +121,29 @@ exports.deleteProdi = async (req, res) => {
     } catch (error) {
         return res.status(500).json({
             message : "Unable to delete prodi"
+        })
+    }
+}
+
+
+//=================================================
+
+exports.addAkreditasi = async (req, res) => {
+    try {
+        const data = req.body
+        if(!data) return res.status(404).json({
+            message : "Akreditasi Required"
+        })
+
+        const akreditasi = new Akreditasi(data)
+        await akreditasi.save()
+        return res.status(200).json({
+            message : "SuccesFully",
+            data : akreditasi
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message : "Unable to add",
         })
     }
 }

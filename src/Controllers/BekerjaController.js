@@ -14,11 +14,13 @@ exports.addBidang = async (req, res) => {
         await data.save()
 
         return res.status(200).json({
-            data : bidang
+            data : data
         })
     } catch (error) {
+        console.log(error)
         return res.status(400).json({
-            message : "Unable to add Bidang"
+            message : "Unable to add Bidang",
+            error
         })
     }
 }
@@ -30,7 +32,7 @@ exports.addJenis = async (req, res) => {
             message: "Data Required"
         })
 
-        const jenis = new Jenis()
+        const jenis = new Jenis(data)
         await jenis.save()
 
         return res.status(200).json({
@@ -50,7 +52,7 @@ exports.addKategori = async (req, res) => {
             message: "Data Required"
         })
 
-        const kategori = new Kategori()
+        const kategori = new Kategori(data)
         await kategori.save()
 
         return res.status(200).json({
@@ -62,3 +64,4 @@ exports.addKategori = async (req, res) => {
         })
     }
 }
+

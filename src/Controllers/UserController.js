@@ -38,26 +38,35 @@ exports.getAll = async (req, res) => {
     }
 };
 
-// exports.searchUser = async (req, res) => {
-//     try {
-//         const {nama, email, jabatan, pendidikan } = req.body
-//         const user = await new User.find({ nama, email, jabatan, pendidikan })
-//         if(!user){
-//             return res.status(404).json({
-//                 message: "Pengguna tidak ditemukan"
-//             })
-//         }
-//         return res.status(200).json({
-//             user
-//         })
+exports.searchUser = async (req, res) => {
+    try {
+        const { nama, email, jabatan, pendidikan } = req.query;
 
-//     } catch (error) {
-//         res.status(500).json({
-//             message: "Failed"
-//         })
-//     }
-    
-// }
+        const searchCriteria = {};
+        if (nama) searchCriteria.nama = { $regex: nama, $options: "i" };
+        if (email) searchCriteria.email = { $regex: email, $options: "i" };
+        if (jabatan) searchCriteria.jabatan = { $regex: jabatan, $options: "i" };
+        if (pendidikan) searchCriteria.pendidikan = { $regex: pendidikan, $options: "i" };
+
+        const users = await User.find({ ...searchCriteria, not_delete: true }).populate("roleId", "name");
+
+        if (users.length === 0) {
+            return res.status(404).json({ message: "No users found matching the criteria" });
+        }
+
+        return res.status(200).json({
+            message: "Users found successfully",
+            data: users
+        });
+    } catch (error) {
+        console.error("Search failed:", error);
+        return res.status(500).json({
+            message: "Failed to search for users",
+            error: error.message || error
+        });
+    }
+};
+
 
 exports.createUser = async (req, res) => {
     try {

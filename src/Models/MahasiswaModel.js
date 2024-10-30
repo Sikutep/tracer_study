@@ -20,7 +20,7 @@ const mahasiswaSchema = mongoose.Schema({
             required: true
         },
         ttl: {
-            type: Date
+            type: String
         }
     },
     kampus: {
@@ -34,6 +34,10 @@ const mahasiswaSchema = mongoose.Schema({
         }
     },
     akun: {
+        role_id : {
+            type: mongoose.Types.ObjectId,
+            ref: "role"
+        },
         email: {
             type: String,
             unique: true,
@@ -45,19 +49,13 @@ const mahasiswaSchema = mongoose.Schema({
         }
     },
     kondisi : {
-        type : String,
-        enum : ["Bekerja", "Sedang Mencari Kerja", "Wirausaha", "Belum Memungkinkan Bekerja"],
-        default : "Sedang Mencari Kerja"
+        type : mongoose.Types.ObjectId,
+        ref : "kondisi"
+      
     },
-    
-    bidang : {
-        Type : Text
-    },
-    kategori : {
-        Type : Text
-    },
-    jenis : {
-        Type : Text
+    status: {
+        type: String,
+       enum: ["Aktif", "Non Aktif"],
     },
     createdAt: {
         type: Date,
@@ -72,10 +70,7 @@ const mahasiswaSchema = mongoose.Schema({
         default: true
     },
     
-    // status: {
-    //     type: String,
-    //     required: true
-    // }
+    
 });
 
 mahasiswaSchema.pre('save', function(next){

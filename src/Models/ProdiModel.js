@@ -10,14 +10,14 @@ const prodiSchema = mongoose.Schema({
         type: String
     },
     jenjang : {
-        type: String,
-        enum: ['D1', 'D2', 'D3', 'D4'],
-        required: true
+        type: mongoose.Types.ObjectId,
+        ref: "jenjang",
+        required : true
     },
     akreditasi : {
-        type: String,
-        enum: ['Unggul', 'Baik Sekali', 'Baik', 'Tidak Terakreditasi', 'Terakreditasi Sementara'], 
-        required: true
+        type: mongoose.Types.ObjectId,
+        ref: "akreditasi",
+        required : true
     },
 
     kondisi : {
@@ -39,19 +39,23 @@ const prodiSchema = mongoose.Schema({
         }
        },
        wiraswasta : {
-        //bidang usaha
-        //kategori usaha
-        //jenis usaha
-       },
-       mencari_kerja : {
-
-       },
-       belum_bekerja : {
-        
-       }
+        id_bidang : {
+            type : mongoose.Types.ObjectId,
+            ref: "bidang_usaha",
+            required : true
+        },
+        id_kategori : {
+            type : mongoose.Types.ObjectId,
+            ref: "kategori_usaha",
+            required : true
+        },
+        id_jenis : {
+            type : mongoose.Types.ObjectId,
+            ref: "jenis_usaha",
+            required : true
+        }
+        },
     },
-
-
     status : {
         type : String,
         required : true,
@@ -70,6 +74,7 @@ const prodiSchema = mongoose.Schema({
         type: Boolean,
         default: true
     },
+   
     
 })
 
