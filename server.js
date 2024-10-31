@@ -10,6 +10,7 @@ const KampusRoutes = require('./src/Routes/KampusRoutes');
 const BekerjaRouter = require('./src/Routes/BekerjaRoutes');
 const WirausahaRoutes = require('./src/Routes/WirausahaRoutes');
 const MahasiswaRoutes = require('./src/Routes/MahasiswaRoutes');
+const DataProcessingRoutes = require('./src/Routes/DataProcessingRoutes');
 
 
 // Mongo DB Connections
@@ -38,6 +39,8 @@ app.use('/kampus', KampusRoutes)
 app.use('/mahasiswa', MahasiswaRoutes)
 
 
+
+app.use('/dashboard', DataProcessingRoutes)
 // Connection
 const PORT = 5000
 app.listen(PORT, ()=>{

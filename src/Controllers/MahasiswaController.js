@@ -1,6 +1,7 @@
 const Kondisi = require('../Models/BigData/KondisiModel')
 const Mahasiswa = require('../Models/MahasiswaModel')
 const MahasiswaKondisi = require('../Models/BigData/MahasiswakondisiModel')
+const Kampus = require('../Models/KampusModel')
 
 
 exports.getAll = async (req, res) => {
@@ -13,8 +14,8 @@ exports.getAll = async (req, res) => {
         const mahasiswaList = await Mahasiswa.find({ not_delete: true })
             .skip(skip)
             .limit(limit)
-            .populate("kampus.prodi", "name")
-            .populate("kampus.kampus", "name")
+            .populate("kampus.prodi", "prodi")
+            .populate("kampus.kampus", "kampus")
             .populate("kondisi");
 
         const totalPages = Math.ceil(totalMahasiswa / limit);
@@ -200,8 +201,30 @@ exports.deleteMahasiswa = async (req, res) => {
     }
 };
 
+//================ Auth Mahasiswa ======================
 
+exports.login = async (req, res) => {
+    try {
+        const { nim, password } = req.body;
+        if (!nim || !password) {
+            return res.status(400).json({ message: "Nim or password required" });
+        }
 
+        const user = await Mahasiswa.findOne({ nim });
+        if (!user) {
+            return res.status(404).json({ message: "User not Found" });
+        }
+
+        if (user.password !== password) {
+            return res.status(401).json({ message: "Incorrect password" });
+        }
+
+        return res.status(200).json({ message: "Login Seccesfully", user });
+    } catch (error) {
+        console.error("Gagal login:", error);
+        return res.status(500).json({ message: "Terjadi kesalahan", error: error.message });
+    }
+};
 
 //================ Kondisi =============================
 exports.add = async (req, res) => {

@@ -30,7 +30,7 @@ const mahasiswaSchema = mongoose.Schema({
         },
         kampus: {
             type: mongoose.Types.ObjectId,
-            ref: "Kampus"
+            ref: "kampus"
         }
     },
     akun: {
