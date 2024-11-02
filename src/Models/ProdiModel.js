@@ -12,12 +12,12 @@ const prodiSchema = mongoose.Schema({
     jenjang : {
         type: mongoose.Types.ObjectId,
         ref: "jenjang",
-        required : true
+        // required : true
     },
     akreditasi : {
         type: mongoose.Types.ObjectId,
         ref: "akreditasi",
-        required : true
+        // required : true
     },
 
     kondisi : {

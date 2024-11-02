@@ -3,6 +3,13 @@ const Mahasiswa = require('../Models/MahasiswaModel')
 const MahasiswaKondisi = require('../Models/BigData/MahasiswakondisiModel')
 const Kampus = require('../Models/KampusModel')
 
+const BidangWirausaha = require('../Models/BigData/Wirausaha/BidangUsahaModel');
+const KategoriPekerjaan = require('../Models/BigData/Bekerja/KategoriPekerjaanmodel');
+const JenisPekerjaan = require('../Models/BigData/Bekerja/JenisPekerjaanModel');
+const Prodi = require('../Models/ProdiModel')
+
+const hasilKeselarasanHorizontal = require('../Models/DataProcessing/KeselarasanHorizontal/HasilKeselarasanHorizontalModel')
+
 
 exports.getAll = async (req, res) => {
     try {
@@ -249,25 +256,69 @@ exports.add = async (req, res) => {
     }
 }
 
-//=========================== Mahasiswa ====================
+//=========================== Mahasiswa Kondisi====================
 
-exports.addmahasiswaKondisi = async(req, res) => {
+exports.addmahasiswaKondisi = async (req, res) => {
     try {
-        const data = req.body
-        if (!data) return res.status(400).json({
-            message: "Data required"
-        })
-        const kondisiMahasiswa = new MahasiswaKondisi(data)
-        await kondisiMahasiswa.save()
+        const data = req.body;
+        if (!data) {
+            return res.status(400).json({
+                message: "Data required"
+            });
+        }
 
+        const kondisiMahasiswa = new MahasiswaKondisi(data);
+        await kondisiMahasiswa.save();
+
+        if(!kondisiMahasiswa){
+            return res.status(400).json({ message : "Failed to add Kondisi Mahasiswa" })
+        } else {
+            const mahasiswaKondisi = await MahasiswaKondisi.findById(kondisiMahasiswa._id).populate('id_mahasiswa');
+            const prodiPekerjaan = await Prodi.find().populate('kondisi');
+
+            const { pekerjaan, wirausaha } = mahasiswaKondisi;
+            const kondisi = prodiPekerjaan.find(prodi =>
+                prodi._id.equals(mahasiswaKondisi.id_mahasiswa.kampus.prodi)
+            )?.kondisi;
+
+            const pekerjaanSelaras = pekerjaan && kondisi?.bekerja &&
+                pekerjaan.bidang && pekerjaan.bidang.equals(kondisi.bekerja.id_bidang) &&
+                pekerjaan.kategori && pekerjaan.kategori.equals(kondisi.bekerja.id_kategori) &&
+                pekerjaan.jenis && pekerjaan.jenis.equals(kondisi.bekerja.id_jenis);
+
+            const wirausahaSelaras = wirausaha && kondisi?.wiraswasta &&
+                wirausaha.bidang && wirausaha.bidang.equals(kondisi.wiraswasta.id_bidang) &&
+                wirausaha.kategori && wirausaha.kategori.equals(kondisi.wiraswasta.id_kategori) &&
+                wirausaha.jenis && wirausaha.jenis.equals(kondisi.wiraswasta.id_jenis);
+
+                const selaras = Boolean(pekerjaanSelaras || wirausahaSelaras);
+
+            let keselarasan = await hasilKeselarasanHorizontal.findOne({ id_mahasiswa: mahasiswaKondisi.id_mahasiswa._id });
+
+            if (keselarasan) {
+                keselarasan.selaras = selaras;
+                keselarasan.tanggal_diperbarui = new Date();
+                await keselarasan.save();
+            } else {
+                keselarasan = new hasilKeselarasanHorizontal({
+                    id_mahasiswa: mahasiswaKondisi.id_mahasiswa._id,
+                    // prodi: mahasiswa.kampus.prodi.name,
+                    selaras,
+                    tanggal_diperbarui: new Date()
+                });
+                await keselarasan.save();
+                console.log(keselarasan)
+            }
+        }
         return res.status(200).json({
-            message: "Succesfully Added",
-            data : kondisiMahasiswa
-        })
+            message: "Successfully added",
+            data: kondisiMahasiswa
+        });
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return res.status(500).json({
-            message: "Unable to add Data"
-        })
+            message: "Unable to add data",
+            error: error.message
+        });
     }
-}
+};

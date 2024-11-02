@@ -33,8 +33,8 @@ app.use(express.json())
 app.use('/users', UserRouter)
 app.use('/prodi', prodiRoute)
 app.use('/kampus', KampusRoutes)
-// app.use('/kerja', BekerjaRouter)
-// app.use('/wirausaha', WirausahaRoutes)
+app.use('/kerja', BekerjaRouter)
+app.use('/wirausaha', WirausahaRoutes)
 
 app.use('/mahasiswa', MahasiswaRoutes)
 

@@ -5,7 +5,7 @@ const { dataBekerja, hasilKeselarasanHorizontal } = require('../Controllers/Data
 const DataProcessingRoutes = express.Router()
 
 DataProcessingRoutes.get('/databekerja', dataBekerja)
-DataProcessingRoutes.get('/horizontal/:id', hasilKeselarasanHorizontal)
+DataProcessingRoutes.get('/horizontal', hasilKeselarasanHorizontal)
 
 
 module.exports = DataProcessingRoutes
