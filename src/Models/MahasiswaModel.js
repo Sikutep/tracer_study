@@ -31,6 +31,10 @@ const mahasiswaSchema = mongoose.Schema({
         kampus: {
             type: mongoose.Types.ObjectId,
             ref: "kampus"
+        },
+        tahun_lulusan : {
+            type : mongoose.Types.ObjectId,
+            ref : "tahun_lulusan"
         }
     },
     akun: {

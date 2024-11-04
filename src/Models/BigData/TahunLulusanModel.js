@@ -7,4 +7,4 @@ const tahunLulusanSchema = mongoose.Schema({
     }
 })
 
-module.exports = mongoose.module('tahun_lulusan', tahunLulusanSchema)
+module.exports = mongoose.model('tahun_lulusan', tahunLulusanSchema)

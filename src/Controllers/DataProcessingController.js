@@ -159,11 +159,15 @@ exports.hasilKeselarasanHorizontal = async (req, res) => {
                     {
                         path: 'kampus.kampus',
                         select: '_id psdku' 
+                    },
+                    {
+                        path: 'kampus.tahun_lulusan',
+                        select: '_id tahun_lulusan'
                     }
                 ]
             });
 
-            // console.log(hasil)
+            console.log(hasil)
         if (!hasil) return res.status(404).json({ message: "Data not found" });
 
         const summary = hasil.reduce((acc, item) => {
@@ -171,6 +175,8 @@ exports.hasilKeselarasanHorizontal = async (req, res) => {
             const prodiNama = item.id_mahasiswa.kampus.prodi.nama
             const kampusId = item.id_mahasiswa.kampus.kampus._id
             const kampusNama = item.id_mahasiswa.kampus.kampus.psdku
+            const lulusanId = item.id_mahasiswa.kampus.tahun_lulusan._id
+            const lulusan = item.id_mahasiswa.kampus.tahun_lulusan.tahun_lulusan
             const tanggalDiperbarui = item.tanggal_diperbarui
 
             if (!acc[prodiId]) {
@@ -179,6 +185,8 @@ exports.hasilKeselarasanHorizontal = async (req, res) => {
                     prodi_nama: prodiNama,
                     kampus_id : kampusId,
                     kampus_nama : kampusNama,
+                    id_tahun_lulusan : lulusanId,
+                    tahun_lulusan : lulusan,
                     tanggal_diperbarui : tanggalDiperbarui,
                     selaras: 0,
                     tidak_selaras: 0

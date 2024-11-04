@@ -1,6 +1,7 @@
 const express = require('express')
 
 const { add, getAll, getById, addMahasiswa, edit, deleteMahasiswa, addmahasiswaKondisi } = require('../Controllers/MahasiswaController')
+const { addTahunLulusManualy } = require('../Controllers/TahunLulusanController')
 
 const MahasiswaRoutes = express.Router()
 
@@ -15,5 +16,7 @@ MahasiswaRoutes.post('/addmahasiswakondisi', addmahasiswaKondisi)
 
 
 MahasiswaRoutes.post('/addkondisi', add)
+
+MahasiswaRoutes.post('/addtahunlulusan', addTahunLulusManualy)
 
 module.exports = MahasiswaRoutes

@@ -18,3 +18,19 @@ exports.addTahunLulusan = async () => {
         console.error("Gagal menambahkan tahun lulusan:", error);
     }
 };
+
+exports.addTahunLulusManualy = async (req, res) => {
+    try {
+        const data = req.body
+        if(!data) return res.status(401).json({ message : "Data is Required"})
+        const tahun = new TahunLulusan(data)
+        await tahun.save()
+        if(!tahun) return res.status(400).json({ message : "Failed add Data"})
+        return res.status(200).json({ message: "Succesfully Added"})
+    } catch (error) {
+        return res.status(500).json({
+            message : "Failed added",
+            data : error.message
+        })
+    }
+}

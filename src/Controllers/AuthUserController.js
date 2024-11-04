@@ -111,12 +111,10 @@ exports.forgotPassword = async (req, res) => {
             return res.status(404).json({ message: "Pengguna tidak ditemukan" });
         }
 
-        // Buat reset token sederhana
         const resetToken = Math.random().toString(36).substr(2);
 
-        // Kirim link reset melalui email (tanpa penyimpanan token)
         const transporter = nodemailer.createTransport({
-            service: 'Gmail', // sesuaikan dengan penyedia layanan email Anda
+            service: 'Gmail', 
             auth: {
                 user: 'your_email@gmail.com',
                 pass: 'your_email_password',

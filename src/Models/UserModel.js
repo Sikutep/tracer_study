@@ -7,7 +7,7 @@ const PenggunaSchema = mongoose.Schema({
         required: true
     },
     nip :{
-        type: String,
+        type: Number,
         required: true
     },
     jabatan :{

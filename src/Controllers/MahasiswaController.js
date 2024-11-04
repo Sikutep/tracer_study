@@ -115,14 +115,12 @@ exports.addMahasiswa = async (req, res) => {
     try {
         const { pribadi, akun, kampus, kondisi } = req.body;
         
-        // Validasi data mahasiswa yang diperlukan
         if (!pribadi || !akun || !kampus) {
             return res.status(400).json({
                 message: "Required fields are missing (pribadi, akun, kampus)"
             });
         }
 
-        // Buat instance baru dari model Mahasiswa
         const mahasiswa = new Mahasiswa({
             pribadi,
             akun,
@@ -130,7 +128,6 @@ exports.addMahasiswa = async (req, res) => {
             kondisi
         });
 
-        // Simpan mahasiswa baru ke dalam database
         await mahasiswa.save();
 
         return res.status(201).json({
@@ -146,7 +143,6 @@ exports.addMahasiswa = async (req, res) => {
     }
 };
 
-// EDIT Mahasiswa by ID
 exports.edit = async (req, res) => {
     try {
         const mahasiswaId = req.params.id;
@@ -180,7 +176,7 @@ exports.edit = async (req, res) => {
     }
 };
 
-// DELETE Mahasiswa (set not_delete to false)
+
 exports.deleteMahasiswa = async (req, res) => {
     try {
         const mahasiswaId = req.params.id;

@@ -13,7 +13,10 @@ exports.getAll = async (req, res) => {
 
         const totalKampus = await Kampus.countDocuments({not_delete: true});
 
-        const kampus = await Kampus.find({ not_delete : true})
+        const kampus = await Kampus.find({ not_delete : true}).populate({
+            path : "akreditasi",
+            select : "_id akreditasi"
+        })
             .skip(skip)
             .limit(limit);
 
