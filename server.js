@@ -11,6 +11,7 @@ const BekerjaRouter = require('./src/Routes/BekerjaRoutes');
 const WirausahaRoutes = require('./src/Routes/WirausahaRoutes');
 const MahasiswaRoutes = require('./src/Routes/MahasiswaRoutes');
 const DataProcessingRoutes = require('./src/Routes/DataProcessingRoutes');
+const TracerStudyRoutes = require('./src/Routes/TracerStudyRoutes');
 
 
 // Mongo DB Connections
@@ -30,17 +31,24 @@ app.use(express.json())
 
 
 // Routes
-app.use('/users', UserRouter)
-app.use('/prodi', prodiRoute)
-app.use('/kampus', KampusRoutes)
+
+
 app.use('/kerja', BekerjaRouter)
 app.use('/wirausaha', WirausahaRoutes)
 
+
+//Super Admin Routes
+app.use('/dashboard', DataProcessingRoutes)
+app.use('/tracerstudy', TracerStudyRoutes)
+app.use('/users', UserRouter)
+app.use('/prodi', prodiRoute)
+app.use('/kampus', KampusRoutes)
+
+
+//Admin Routes
 app.use('/mahasiswa', MahasiswaRoutes)
 
 
-
-app.use('/dashboard', DataProcessingRoutes)
 // Connection
 const PORT = 5000
 app.listen(PORT, ()=>{

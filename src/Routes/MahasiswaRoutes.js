@@ -14,7 +14,6 @@ MahasiswaRoutes.delete('/delete/:id', deleteMahasiswa)
 
 MahasiswaRoutes.post('/addmahasiswakondisi', addmahasiswaKondisi)
 
-
 MahasiswaRoutes.post('/addkondisi', add)
 
 MahasiswaRoutes.post('/addtahunlulusan', addTahunLulusManualy)
