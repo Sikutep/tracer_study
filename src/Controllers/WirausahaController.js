@@ -1,67 +1,120 @@
-const Bidang = require('../Models/BigData/Wirausaha/BidangUsahaModel')
-const Jenis = require('../Models/BigData/Wirausaha/JenisUsahaModel')
-const Kategori = require('../Models/BigData/Wirausaha/KategoriUsahaModel')
+const Wirausaha = require('../Models/BigData/MasterDataWirausaha')
 
-
-exports.addBidang = async (req, res) => {
+exports.addDataWirausaha = async (req, res) => {
     try {
         const data = req.body
-        if(!data) return res.status(404).json({
-            message: "Data Required"
-        })
-
-        const bidang = new Bidang(data)
-        await bidang.save()
+        if (!data) return res.status(400).json({ message : "Data require"})
+        
+        const wirausaha = new Wirausaha(data)
+        await wirausaha.save()
 
         return res.status(200).json({
-            data : bidang
+            message : "Succesfully add Data",
+            data : wirausaha
         })
     } catch (error) {
-        console.log(error);
-        return res.status(400).json({
-            message : "Unable to add Bidang",
-            error : error
+        return res.status(500).json({
+            message : "Unable add Data",
+            error : error.message
         })
     }
 }
 
-exports.addJenis = async (req, res) => {
+exports.getWirausaha = async (req, res) => {
     try {
-        const data = req.body
-        if(!data) return res.status(404).json({
-            message: "Data Required"
-        })
+        const wirausaha = await Wirausaha.find()
+        if (!wirausaha) return res.status(404).json({ message : "Data not Found"})
 
-        const jenis = new Jenis(data)
-        await jenis.save()
+         
+         const result = wirausaha.map(item => {
+            return item.wirausaha.map(bidang => ({
+                namaBidang: bidang.namaBidang,
+                kategoriWirausaha: bidang.jenisWirausaha.map(wirausaha => wirausaha.kategori),
+                jenisWirausaha : bidang.jenisWirausaha.map(wirausaha => wirausaha.jenis)
+            }));
+        }).flat();
 
         return res.status(200).json({
-            data : jenis
+            message : "Succesfully get Data",
+            data : result
         })
     } catch (error) {
-        console.log(error)
-        return res.status(400).json({
-            message : "Unable to add Bidang"
+        return res.status(500).json({
+            message : "Unable get Data",
+            error : error.message
         })
     }
 }
 
-exports.addKategori = async (req, res) => {
+exports.getDataBidang = async (req, res) => {
     try {
-        const data = req.body
-        if(!data) return res.status(404).json({
-            message: "Data Required"
-        })
+        const wirausaha = await Wirausaha.find()
+        if (!wirausaha) return res.status(404).json({ message : "Data not Found"})
 
-        const kategori = new Kategori(data)
-        await kategori.save()
+        const result = wirausaha.map(item => {
+            return item.wirausaha.flatMap(bidang => bidang.namaBidang);
+        }).flat();
+
+        
+        const uniqueResult = [...new Set(result)];
 
         return res.status(200).json({
-            data : kategori
+            message : "Succesfully get Data",
+            data : uniqueResult
         })
     } catch (error) {
-        return res.status(400).json({
-            message : "Unable to add kategori"
+        return res.status(500).json({
+            message : "Unable get Data",
+            error : error.message
+        })
+    }
+}
+
+exports.getDataKategori = async (req, res) => {
+    try {
+        const wirausaha = await Wirausaha.find()
+        if (!wirausaha) return res.status(404).json({ message : "Data not Found"})
+
+         
+        const result = wirausaha.map(item => {
+            return item.wirausaha.flatMap(bidang => 
+                bidang.jenisWirausaha.flatMap(wirausaha => wirausaha.kategori)
+            );
+        }).flat();
+
+        return res.status(200).json({
+            message : "Succesfully get Data",
+            data : result
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message : "Unable get Data",
+            error : error.message
+        })
+    }
+}
+
+exports.getDataJenis = async (req, res) => {
+    try {
+        const wirausaha = await Wirausaha.find()
+        if (!wirausaha) return res.status(404).json({ message : "Data not Found"})
+
+         
+        const result = wirausaha.map(item => {
+            return item.wirausaha.flatMap(bidang => 
+                bidang.jenisWirausaha.flatMap(wirausaha => wirausaha.jenis)
+            );
+        }).flat();
+    
+
+        return res.status(200).json({
+            message : "Succesfully get Data",
+            data : result
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message : "Unable get Data",
+            error : error.message
         })
     }
 }

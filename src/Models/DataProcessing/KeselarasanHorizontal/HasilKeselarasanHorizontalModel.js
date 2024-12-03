@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const hasilKeselarasanHorizontal = new mongoose.Schema({
     id_mahasiswa: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Types.ObjectId,
         ref: 'Mahasiswa',
         required: true
     },

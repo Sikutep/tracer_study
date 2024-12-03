@@ -1,4 +1,4 @@
-// Kriteria, Deskripsi, Logika, Atensi
+
 
 const mongoose = require('mongoose')
 

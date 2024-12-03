@@ -21,3 +21,13 @@ exports.addJenjang = async (req, res) => {
         })
     }
 }
+
+exports.getJenjang = async (req, res) => {
+    try {
+        const dataJenjang = await Jenjang.find()
+        if(!dataJenjang) return res.status(404).json({ message : "jenjang not Found"})
+        return res.status(200).json({ message : "Succesfully get", data : dataJenjang})
+    } catch (error) {
+        return res.status(500).json({ message : "Unable to get"})
+    }
+}

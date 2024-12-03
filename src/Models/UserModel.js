@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 
 
 const PenggunaSchema = mongoose.Schema({
+    avatar : {
+        type: String,
+        required : true
+    },
     nama :{
         type: String,
         required: true
@@ -41,7 +45,7 @@ const PenggunaSchema = mongoose.Schema({
     },
     roleId : {
         type: mongoose.Schema.Types.ObjectId, 
-        ref: "Role" 
+        ref: "role" 
     },
     createdAt: { 
         type: Date, 
@@ -51,6 +55,13 @@ const PenggunaSchema = mongoose.Schema({
         type: Date, 
         default: Date.now 
     },
+    passwordResetToken: {
+        type: String,
+    },
+    passwordResetExpires: {
+        type: Date,
+    },
+    
 });
 
 PenggunaSchema.pre('save', function(next){

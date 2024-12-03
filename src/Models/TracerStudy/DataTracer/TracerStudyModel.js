@@ -8,44 +8,50 @@ const tracerStudySchema = mongoose.Schema({
     skala_kegiatan : {
         skala_kegiatan : {
             type : String,
-            enum : ['PSDKU', 'Nasional']
+            enum : ['Nasional', 'PSDKU']
         },
         tahun_lulusan : {
             type : mongoose.Types.ObjectId,
             ref : "tahun_lulusan"
         },
-        kampus : {
+        kampus : [
+            {
             type : mongoose.Types.ObjectId,
             ref : "kampus"
-        },
-        prodi : {
+            }
+        ],
+        prodi : [
+            {
             type : mongoose.Types.ObjectId,
-            ref : "prodi"
-        },
+            ref : "Prodi"
+            }
+        ],
         
     },
-    id_soal : {
-        type : mongoose.Types.ObjectId,
-        ref : "soal"
-    },
+    id_soal : [
+        {
+            type : mongoose.Types.ObjectId,
+            ref : "soal"
+        }
+    ],
     atensi : {
-        atensi_horizontal : {
+        atensi_horizontal : [{
             type : mongoose.Types.ObjectId,
             ref : "atensi_horizontal"
-        },
-        atensi_vertikal : {
+        }],
+        atensi_vertikal : [{
             type : mongoose.Types.ObjectId,
             ref : "atensi_vertikal"
-        }
+        }]
     },
     id_pembuat : {
         type : mongoose.Types.ObjectId,
-        ref : "atensi_vertikal"
+        ref : "pengguna"
     },
-    id_responden : {
+    id_responden : [{
         type : mongoose.Types.ObjectId,
         ref : 'responden'
-    },
+    }],
     status : {
         enum : ['Draft', 'Berlangsung', 'Selesai', 'Dibatalkan'],
         type : String,
@@ -70,7 +76,7 @@ const tracerStudySchema = mongoose.Schema({
 
 });
 
-    tracerStudySchema.pre('save', function(next){
+tracerStudySchema.pre('save', function(next){
     this.updatedAt = Date.now();
     next();
 })

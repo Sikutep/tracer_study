@@ -34,3 +34,19 @@ exports.addTahunLulusManualy = async (req, res) => {
         })
     }
 }
+
+exports.getTahunLulus = async (req, res) => {
+    try {
+        const data = await TahunLulusan.find()
+        if(!data) return res.status(404).json({ message : "tahun lulusan not found"})
+        return res.status(200).json({
+            message : "Succesfully get tahun Lulusan",
+            data : data
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message : "Unable get data",
+            error : error.message
+        })
+    }
+}

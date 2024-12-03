@@ -1,148 +1,94 @@
 const Mahasiswa = require('../Models/MahasiswaModel');
 const MahasiswaKondisi = require('../Models/BigData/MahasiswakondisiModel');
 const Kondisi = require('../Models/BigData/KondisiModel');
-const BidangWirausaha = require('../Models/BigData/Wirausaha/BidangUsahaModel');
-const KategoriPekerjaan = require('../Models/BigData/Bekerja/KategoriPekerjaanmodel');
-const JenisPekerjaan = require('../Models/BigData/Bekerja/JenisPekerjaanModel');
+
+
+// const BidangWirausaha = require('../Models/BigData/Wirausaha/BidangUsahaModel');
+// const KategoriPekerjaan = require('../Models/BigData/Bekerja/KategoriPekerjaanmodel');
+// const JenisPekerjaan = require('../Models/BigData/Bekerja/JenisPekerjaanModel');
+
+
 const Prodi = require('../Models/ProdiModel')
 const HasilKeselarasanHorizontalModel = require('../Models/DataProcessing/KeselarasanHorizontal/HasilKeselarasanHorizontalModel');
+const HasilKeselararasanVertikal = require('../Models/DataProcessing/KeselarasanVertikal/HasilKeselararasanVertikal');
+const OutputVertikal = require('../Models/Output/OutputVertikalModel');
+const TracerStudyModel = require('../Models/TracerStudy/DataTracer/TracerStudyModel');
+
+
+
+
+
+
+
 
 
 exports.totalResponden = async (req, res) => {
     try {
-        const mahasiswa = await Mahasiswa.find();
-        if (!mahasiswa || mahasiswa.length === 0) {
+    
+        const totalResponden = await TracerStudyModel.aggregate([
+            { $unwind: "$id_responden" }, 
+            { $group: { _id: null, total: { $sum: 1 } } } 
+        ]);
+
+        if (totalResponden.length === 0) {
             return res.status(404).json({ message: "Total Responden Not Found" });
         }
+
         return res.status(200).json({
-            message : "Succesfully get Total Responden",
-            data : mahasiswa.length 
-        })
+            message: "Successfully retrieved total responden",
+            data: totalResponden[0].total 
+        });
     } catch (error) {
         return res.status(500).json({
             message: "Unable to get Total Responden Data",
             error: error.message
         });
     }
-}
+};
 
 
-exports.dataBekerja = async ( req, res) => {
+exports.dataKondisi = async (req, res) => {
     try {
         
-        const kondisi = await Kondisi.findOne({ _id: "6721f27a98abfe25dbdd67d6" }); 
-        if (!kondisi) return res.status(404).json({ message: "Kondisi not Found" });
+        const kondisiIds = [
+            { _id: "6730dd268b77a9ff8577765a", message: "Data Bekerja" },   
+            { _id: "6730dd2d8b77a9ff8577765c", message: "Data Wirausaha" },  
+            { _id: "6730dd418b77a9ff8577765e", message: "Data Belum Bekerja" }, 
+            { _id: "6730dd4d8b77a9ff85777660", message: "Data Tidak Bekerja" }  
+        ];
 
-       
-        const mahasiswa = await Mahasiswa.find({ "kondisi._id": kondisi._id });
-        if (!mahasiswa || mahasiswa.length === 0) {
-            return res.status(404).json({ message: "Data bekerja Not Found" });
+        const results = [];
+        for (let i = 0; i < kondisiIds.length; i++) {
+            const kondisi = await Kondisi.findOne({ _id: kondisiIds[i]._id });
+            if (!kondisi) {
+                results.push({ message: `Kondisi ${kondisiIds[i].message} not found`, data: [] });
+                continue;  
+            }
+
+            const mahasiswa = await Mahasiswa.find({ "kondisi._id": kondisi._id });
+            if (mahasiswa && mahasiswa.length > 0) {
+                results.push({
+                    message: `Kondisi ${kondisi.kondisi}`,
+                    data: {
+                        jumlah: mahasiswa.length,
+                        mahasiswa: mahasiswa
+                    }
+                });
+            } else {
+                results.push({ message: `Data ${kondisiIds[i].message} not found`, data: [] });
+            }
         }
 
-        
-        return res.status(200).json({
-            message: `Kondisi ${kondisi.kondisi}`,
-            data: {
-                jumlah: mahasiswa.length,
-                mahasiswa: mahasiswa
-            }
-        });
-        
+        return res.status(200).json({ results });
+
     } catch (error) {
         return res.status(500).json({
             message: "Unable to get Data",
             error: error.message
         });
     }
-}
+};
 
-exports.dataWirausaha = async ( req, res) => {
-    try {
-       
-        const kondisi = await Kondisi.findOne({ _id: "6721f29398abfe25dbdd67da" }); 
-        if (!kondisi) return res.status(404).json({ message: "Kondisi not Found" });
-
-   
-        const mahasiswa = await Mahasiswa.find({ "kondisi._id": kondisi._id });
-        if (!mahasiswa || mahasiswa.length === 0) {
-            return res.status(404).json({ message: "Data Wirausaha Not Found" });
-        }
-
-
-        return res.status(200).json({
-            message: `Kondisi ${kondisi.kondisi}`,
-            data: {
-                jumlah: mahasiswa.length,
-                mahasiswa: mahasiswa
-            }
-        });
-        
-    } catch (error) {
-        return res.status(500).json({
-            message: "Unable to get Data",
-            error: error.message
-        });
-    }
-}
-
-exports.dataBelumBekerja = async ( req, res) => {
-    try {
-       
-        const kondisi = await Kondisi.findOne({ _id: "6721f28598abfe25dbdd67d8" }); 
-        if (!kondisi) return res.status(404).json({ message: "Kondisi not Found" });
-
-   
-        const mahasiswa = await Mahasiswa.find({ "kondisi._id": kondisi._id });
-        if (!mahasiswa || mahasiswa.length === 0) {
-            return res.status(404).json({ message: "Data Wirausaha Not Found" });
-        }
-
-
-        return res.status(200).json({
-            message: `Kondisi ${kondisi.kondisi}`,
-            data: {
-                jumlah: mahasiswa.length,
-                mahasiswa: mahasiswa
-            }
-        });
-        
-    } catch (error) {
-        return res.status(500).json({
-            message: "Unable to get Data",
-            error: error.message
-        });
-    }
-}
-
-
-exports.dataTidakBekerja = async ( req, res) => {
-    try {
-       
-        const kondisi = await Kondisi.findOne({ _id: "6721f2a798abfe25dbdd67dc" }); 
-        if (!kondisi) return res.status(404).json({ message: "Kondisi not Found" });
-
-   
-        const mahasiswa = await Mahasiswa.find({ "kondisi._id": kondisi._id });
-        if (!mahasiswa || mahasiswa.length === 0) {
-            return res.status(404).json({ message: "Data Wirausaha Not Found" });
-        }
-
-
-        return res.status(200).json({
-            message: `Kondisi ${kondisi.kondisi}`,
-            data: {
-                jumlah: mahasiswa.length,
-                mahasiswa: mahasiswa
-            }
-        });
-        
-    } catch (error) {
-        return res.status(500).json({
-            message: "Unable to get Data",
-            error: error.message
-        });
-    }
-}
 
 
 exports.hasilKeselarasanHorizontal = async (req, res) => {
@@ -171,13 +117,13 @@ exports.hasilKeselarasanHorizontal = async (req, res) => {
         if (!hasil) return res.status(404).json({ message: "Data not found" });
 
         const summary = hasil.reduce((acc, item) => {
-            const prodiId = item.id_mahasiswa.kampus.prodi._id
-            const prodiNama = item.id_mahasiswa.kampus.prodi.nama
-            const kampusId = item.id_mahasiswa.kampus.kampus._id
-            const kampusNama = item.id_mahasiswa.kampus.kampus.psdku
-            const lulusanId = item.id_mahasiswa.kampus.tahun_lulusan._id
-            const lulusan = item.id_mahasiswa.kampus.tahun_lulusan.tahun_lulusan
-            const tanggalDiperbarui = item.tanggal_diperbarui
+            const prodiId = item.id_mahasiswa?.kampus?.prodi?._id || "N/A";
+            const prodiNama = item.id_mahasiswa?.kampus?.prodi?.nama || "N/A";
+            const kampusId = item.id_mahasiswa?.kampus?.kampus?._id || "N/A";
+            const kampusNama = item.id_mahasiswa?.kampus?.kampus?.psdku || "N/A";
+            const lulusanId = item.id_mahasiswa?.kampus?.tahun_lulusan?._id || "N/A";
+            const lulusan = item.id_mahasiswa?.kampus?.tahun_lulusan?.tahun_lulusan || "N/A";
+            const tanggalDiperbarui = item.tanggal_diperbarui;
 
             if (!acc[prodiId]) {
                 acc[prodiId] = {
@@ -201,10 +147,12 @@ exports.hasilKeselarasanHorizontal = async (req, res) => {
 
             return acc;
         }, {});
-
         
+
         const summaryArray = Object.values(summary);
 
+        console.log("Data Summary", summaryArray);
+        
         return res.status(200).json({
             message: "Successfully retrieved data",
             data: summaryArray
@@ -223,38 +171,182 @@ exports.hasilKeselarasanHorizontal = async (req, res) => {
 
 
 
-exports.detailHasilKeselarasanHorizontal = async (req, res) => {
-    try {
-        const hasil = await HasilKeselarasanHorizontalModel.find().populate({
-            path : 'id_mahasiswa',
-            populate : {
-                path : 'kampus.prodi',
-                select : '_id nama'
-            }
-        })
-        if(!hasil) return res.status(404).json({ message : "Data not Found"})
+// exports.detailHasilKeselarasanHorizontal = async (req, res) => {
+//     try {
+//         const hasil = await HasilKeselarasanHorizontalModel.find().populate({
+//             path : 'id_mahasiswa',
+//             populate : {
+//                 path : 'kampus.prodi',
+//                 select : '_id nama'
+//             }
+//         })
+//         if(!hasil) return res.status(404).json({ message : "Data not Found"})
 
-        const jumlah = hasil.length;
-        const jumlah_selaras = hasil.filter(item => item.selaras).length; 
-        const jumlah_tidak_selaras = hasil.filter(item => !item.selaras).length;
+//         const jumlah = hasil.length;
+//         const jumlah_selaras = hasil.filter(item => item.selaras).length; 
+//         const jumlah_tidak_selaras = hasil.filter(item => !item.selaras).length;
 
-        return res.status(200).json({
-            message: "Successfully retrieved data",
-            data: hasil,
-            jumlah: jumlah,
-            jumlah_selaras: jumlah_selaras,
-            jumlah_tidak_selaras: jumlah_tidak_selaras
-        });
+//         return res.status(200).json({
+//             message: "Successfully retrieved data",
+//             data: hasil,
+//             jumlah: jumlah,
+//             jumlah_selaras: jumlah_selaras,
+//             jumlah_tidak_selaras: jumlah_tidak_selaras
+//         });
 
-    } catch (error) {
-        console.error("Error retrieving data:", error);
-        return res.status(500).json({
-            message: "Failed to retrieve data",
-            error: error.message
-        });
-    }
+//     } catch (error) {
+//         console.error("Error retrieving data:", error);
+//         return res.status(500).json({
+//             message: "Failed to retrieve data",
+//             error: error.message
+//         });
+//     }
     
-}
+// }
+
+// exports.getTracerProdiGrouping = async (req, res) => {
+//     try {
+        
+//         const hasilKeselarasan = await HasilKeselararasanVertikal.find()
+//             .populate({
+//                 path: 'id_mahasiswa',
+//                 populate: {
+//                     path: 'kampus.prodi', 
+//                     select: 'nama' 
+//                 }
+//             });
+
+//         if (!hasilKeselarasan || hasilKeselarasan.length === 0) {
+//             return res.status(404).json({ message: 'Data keselarasan vertikal Not Found' });
+//         }
+
+//         const prodiCount = hasilKeselarasan.reduce((result, item) => {
+//             const prodiName = item.id_mahasiswa?.kampus?.prodi?.nama || 'Prodi not Found';
+//             result[prodiName] = (result[prodiName] || 0) + 1;
+//             return result;
+//         }, {});
+
+//         const groupedData = Object.keys(prodiCount).map((prodi) => ({
+//             prodi,
+//             jumlah: prodiCount[prodi]
+//         }));
+
+//         return res.status(200).json({
+//             message: 'Succesfully get',
+//             data: groupedData
+//         });
+//     } catch (error) {
+//         console.error('Unable and Error retrieving prodi grouping:', error);
+//         return res.status(500).json({ message: 'Unable and Error retrieving prodi grouping:', error: error.message });
+//     }
+// };
+
+
+// exports.processingForVertikal = async (req, res) => {
+//     try {
+//         const hasilKeselarasan = await HasilKeselararasanVertikal.find()
+//         .populate({
+//             path: 'id_mahasiswa',
+//             populate: {
+//                 path: 'kampus.prodi', 
+//                 select: 'nama jenjang' 
+//             },
+            
+//         }).populate({
+//             path : 'id_mahasiswa',
+//             populate : {
+//                 path : 'kampus.tahun_lulusan',
+//                 select : 'tahun_lulusan'
+//             }
+//         })
+
+//         if (!hasilKeselarasan || hasilKeselarasan.length === 0) {
+//             return res.status(404).json({ message: 'Data keselarasan vertikal Not Found' });
+//         }
+
+//         const groupedData = {};
+//         hasilKeselarasan.forEach(item => {
+//             const mahasiswa = item.id_mahasiswa;
+//             const tahunLulusan = mahasiswa?.kampus?.tahun_lulusan?.tahun_lulusan || null;
+//             const jenjang = mahasiswa?.kampus?.prodi?.jenjang || null;
+//             const prodi = mahasiswa?.kampus?.prodi?.nama || null;
+
+//             if (tahunLulusan && jenjang && prodi) {
+//                 const key = `${tahunLulusan}-${jenjang}-${prodi}`;
+
+//                 if (!groupedData[key]) {
+//                     groupedData[key] = {
+//                         tahun_lulusan: tahunLulusan,
+//                         jenjang: jenjang,
+//                         prodi: prodi,
+//                         tinggi: 0,
+//                         sama: 0,
+//                         rendah: 0,
+//                     };
+//                 }
+
+//                 groupedData[key].tinggi += item.tinggi;
+//                 groupedData[key].sama += item.sama;
+//                 groupedData[key].rendah += item.rendah;
+//             }
+//         });
+
+//         if (!groupedData) {
+//             console.log("Failed Grouping Data");
+//             return res.status(400).json({ message : "Failed Grouping Data" })
+//         }
+
+//         console.log("Succesfully grup data", groupedData );
+        
+        
+//         const outputData = Object.values(groupedData).map(group => {
+//             const total = group.tinggi + group.sama + group.rendah;
+//             return {
+//                 tahun_lulusan: group.tahun_lulusan,
+//                 jenjang: group.jenjang,
+//                 prodi: group.prodi,
+//                 keselarasan: {
+//                     tinggi: {
+//                         jumlah: group.tinggi,
+//                         persentase: total > 0 ? `${((group.tinggi / total) * 100).toFixed(2)}%` : '0%',
+//                     },
+//                     sama: {
+//                         jumlah: group.sama,
+//                         persentase: total > 0 ? `${((group.sama / total) * 100).toFixed(2)}%` : '0%',
+//                     },
+//                     rendah: {
+//                         jumlah: group.rendah,
+//                         persentase: total > 0 ? `${((group.rendah / total) * 100).toFixed(2)}%` : '0%',
+//                     },
+//                 },
+//             };
+//         });
+
+      
+
+//         const savedOutputs = await OutputVertikal.insertMany(outputData);
+
+//         if(!savedOutputs) {
+//             console.log("Failed to Saved Output Horizontal");
+//             return res.status(400).json({
+//                 message : "Failed to Saved Output Horizontal"
+//             })
+            
+//         }
+
+//         console.log("Succesfully saved data \n", savedOutputs);
+//         return res.status(200).json({
+//             message : "Succesfully saved data",
+//             data : savedOutputs
+//         })
+        
+//     } catch (error) {
+//         return res.status(500).json({
+//             message : "Unable to processing",
+//             error : error.message
+//         })
+//     }
+// }
 
 
 

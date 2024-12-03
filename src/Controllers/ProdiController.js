@@ -5,13 +5,16 @@ exports.getAll = async (req, res) => {
     try {
         
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 5;
         
         const skip = (page - 1) * limit;
 
         const totalProdi = await Prodi.countDocuments();
 
-        const prodi = await Prodi.find()
+        const prodi = await Prodi.find().populate('akreditasi').populate({
+            select : 'jenjang',
+            path : '_id jenjang'
+        })
             .skip(skip)
             .limit(limit);
 
@@ -39,10 +42,14 @@ exports.getAll = async (req, res) => {
 exports.getById = async (req, res) => {
     try {
         const prodiId = req.params.id
-        const prodi = await Prodi.findById(prodiId)
-        if(!prodi) return res.status(404).json({
-            message: "Prodi is not define"
-        })
+        const prodi = await Prodi.findById(prodiId).populate('akreditasi').populate('jenjang')
+        if(!prodi) {
+            console.log("Prodi is not define");
+            return res.status(404).json({
+                message: "Prodi is not define"
+            })
+        }
+        console.log('Succesfully get Prody');
         return res.status(200).json({
             message: "Succesfully get Prody",
             data : prodi
@@ -59,13 +66,16 @@ exports.createProdi = async (req, res) => {
     try {
         const { kode, nama, jenjang, akreditasi, status  } = req.body
         if( !kode || !nama || !jenjang || !akreditasi || !status ){
+            console.log("Field is required");
             return res.status(400).json({
                 message: "Field is required"
             })
         }
         const prodi = new Prodi(req.body)
         await prodi.save()
-        return res.status(200).json({
+        console.log("Succesfully Save Data");
+        
+        return res.status(201).json({
             message:"Succesfully Save Data",
             data : prodi
         })
@@ -80,16 +90,20 @@ exports.createProdi = async (req, res) => {
 exports.editProdi = async (req, res) => {
     try {
         const prodiId = req.params.id
-        const { kode, nama, jenjang, akreditasi, status } = req.body
+        const data = req.body
 
-        const updateData = { kode, nama, jenjang, akreditasi, status }
+        const updateData = data
+
+        if(!updateData){
+            console.log("Prodi not found");
+            return res.status(404).json({
+                message: "Prodi not found"
+            })  
+        } 
         const updateProdi = await Prodi.findByIdAndUpdate(prodiId, updateData, { new: true, runValidators: true })
 
         
-        if(!updateProdi) return res.status(404).json({
-            message: "Prodi not found"
-        })
-
+        console.log( "Prodi has been Updated");
         return res.status(200).json({
             message: "Prodi has been Updated",
             data: updateProdi
@@ -107,18 +121,22 @@ exports.deleteProdi = async (req, res) => {
     try {
         const prodiId = req.params.id
         const prodi = await Prodi.findById(prodiId)
-        if(!prodi) return res.status(404).json({
-            message : "Prodi not Found"
-        })
+        if(!prodi){
+            console.log("Prodi not Found");
+            return res.status(404).json({
+                message : "Prodi not Found"
+            })
+        } 
         
         prodi.not_delete = false
         await prodi.save()
-
+        console.log("Prodi successfully deleted");
         return res.status(200).json({
             message: "Prodi successfully deleted",
             data: prodi
         });
     } catch (error) {
+        console.log("Unable to delete prodi", error);
         return res.status(500).json({
             message : "Unable to delete prodi"
         })
@@ -131,13 +149,13 @@ exports.deleteProdi = async (req, res) => {
 exports.addAkreditasi = async (req, res) => {
     try {
         const data = req.body
-        if(!data) return res.status(404).json({
+        if(!data) return res.status(400).json({
             message : "Akreditasi Required"
         })
 
         const akreditasi = new Akreditasi(data)
         await akreditasi.save()
-        return res.status(200).json({
+        return res.status(201).json({
             message : "SuccesFully",
             data : akreditasi
         })
@@ -146,4 +164,16 @@ exports.addAkreditasi = async (req, res) => {
             message : "Unable to add",
         })
     }
+}
+
+exports.getAkreditasi = async (req, res) => {
+   try {
+        const akreditasi = await Akreditasi.find()
+        if(!akreditasi) return res.status(404).json({ message : "Dat not found"})
+        return res.status(200).json({ message : "SuccesFully Get", data : akreditasi})
+   } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message : "Unable get Data"})
+        
+   }
 }

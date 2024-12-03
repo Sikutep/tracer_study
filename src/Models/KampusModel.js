@@ -6,6 +6,20 @@ const kampusSchema = mongoose.Schema({
         unique: true,
         required: true
     },
+
+    //banner
+    banner : {
+        type : String,
+    },
+
+
+    //avatar
+
+    avatar : {
+        type : String,
+    },
+
+
     tanggal_berdiri : {
         required : true,
         type : Date
@@ -25,15 +39,14 @@ const kampusSchema = mongoose.Schema({
     prodi :[
         {
             type : mongoose.Schema.Types.ObjectId,
-            ref : "Prodi",
-            required : true
+            ref : "Prodi"
+            // required : true
         }
     ],
     pengguna : [
         {
             type : mongoose.Schema.Types.ObjectId,
-            ref : "User",
-            
+            ref : "Pengguna"    
         }
     ],
     akreditasi : {
@@ -43,7 +56,6 @@ const kampusSchema = mongoose.Schema({
     },
     status : {
         type : String,
-        required : true,
         enum: ['Aktif', 'Non Aktif'],
         default: 'Aktif'
     },

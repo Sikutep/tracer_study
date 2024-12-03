@@ -1,39 +1,68 @@
 const mongoose = require('mongoose');
 
+
 const mahasiswaKondisiSchema = mongoose.Schema({
     id_mahasiswa : {
          type : mongoose.Types.ObjectId,
          required: true,
          ref: "Mahasiswa"
     },
-    pekerjaan: {
-        bidang: {
-            type: mongoose.Types.ObjectId,
-            ref: "bidang_pekerjaan"
-        },
-        kategori: {
-            type: mongoose.Types.ObjectId,
-            ref: "kategori_pekerjaan"
-        },
-        jenis: {
-            type: mongoose.Types.ObjectId,
-            ref: "jenis_pekerjaan"
+    pekerjaan: [
+        {
+            bidang : {
+                type : String,
+            },
+            jenis_pekerjaan : [
+                {
+                    jenis : {
+                        type : String,
+                    },
+                    posisi : {
+                        type : String,
+                    },
+
+                }
+            ]
         }
-    },
-    wirausaha: {
-        bidang: {
-            type: mongoose.Types.ObjectId,
-            ref: "bidang_wirausaha"
-        },
-        kategori: {
-            type: mongoose.Types.ObjectId,
-            ref: "kategori_wirausaha"
-        },
-        jenis: {
-            type: mongoose.Types.ObjectId,
-            ref: "jenis_wirausaha"
+        
+    ],
+    wirausaha: [
+        {
+            bidang : {
+                type : String,
+            },
+            jenis_wirausaha : [
+                {
+                    kategori : {
+                        type : String,
+                    },
+                    jenis : {
+                        type : String,
+                    },
+
+                }
+            ]
         }
-    },
+        
+    ],
+    belum_bekerja : [
+        {
+            bidang : {
+                type : String,
+            },
+            kategori_pekerjaan : [
+                {
+                    kategori : {
+                        type : String,
+                    },
+                    jenis : {
+                        type : String,
+                    },
+
+                }
+            ]
+        }
+    ],
     createdAt: {
         type: Date,
         default: Date.now
@@ -47,16 +76,15 @@ const mahasiswaKondisiSchema = mongoose.Schema({
         default: true
     }
 });
-// Validasi kustom untuk memastikan hanya salah satu yang diisi
-mahasiswaKondisiSchema.pre('validate', function(next) {
-    const hasPekerjaan = this.pekerjaan && 
-                        (this.pekerjaan.bidang || this.pekerjaan.kategori || this.pekerjaan.jenis);
-    const hasWirausaha = this.wirausaha && 
-                         (this.wirausaha.bidang || this.wirausaha.kategori || this.wirausaha.jenis);
+
+mahasiswaKondisiSchema.pre('validate', function (next) {
+    const hasPekerjaan = Array.isArray(this.pekerjaan) && this.pekerjaan.length > 0;
+    const hasWirausaha = Array.isArray(this.wirausaha) && this.wirausaha.length > 0;
 
     if (hasPekerjaan && hasWirausaha) {
         return next(new Error('Hanya satu dari pekerjaan atau wirausaha yang boleh diisi.'));
     }
+
     if (!hasPekerjaan && !hasWirausaha) {
         return next(new Error('Salah satu dari pekerjaan atau wirausaha harus diisi.'));
     }

@@ -15,7 +15,7 @@ exports.getAll = async (req, res) => {
         const users = await User.find({ not_delete: true })
             .skip(skip)
             .limit(limit)
-            .populate("roleId", "name");
+            .populate("roleId", "role");
 
         const totalPages = Math.ceil(totalUsers / limit);
 
@@ -37,6 +37,18 @@ exports.getAll = async (req, res) => {
         });
     }
 };
+
+exports.userById = async (req, res) => {
+    try {
+        const userId = req.params.id
+        if (!userId) return res.status(400).json({ message : "User is Not Defind"})
+
+        const dataUser = await User.findById(userId)
+        return res.status(200).json({ message : "Succesfully get User", data : dataUser})
+    } catch (error) {
+        return res.status(500).json({ message : "Unable to get User", error : error.message})
+    }
+}
 
 exports.searchUser = async (req, res) => {
     try {
@@ -70,11 +82,11 @@ exports.searchUser = async (req, res) => {
 
 exports.createUser = async (req, res) => {
     try {
-        const { nama, nip, jabatan, pendidikan, email, password, is_active, roleId } = req.body;
+        const { nama, nip, jabatan, pendidikan, email, password, roleId } = req.body;
     
         if (!nama || !nip || !jabatan || !pendidikan || !email || !password || !roleId) {
             return res.status(400).json({
-                message: "All fields are required"
+                message: "All fields are required (nama, nip, jabatan, pendidikan, email, password, roleId)"
             });
         }
 
@@ -87,7 +99,7 @@ exports.createUser = async (req, res) => {
     } catch (error) {
         return res.status(400).json({
             message: "Failed to add user",
-            error: error.message || error
+            error: error.message
         });
     }
 };

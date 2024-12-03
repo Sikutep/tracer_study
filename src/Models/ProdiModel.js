@@ -12,50 +12,62 @@ const prodiSchema = mongoose.Schema({
     jenjang : {
         type: mongoose.Types.ObjectId,
         ref: "jenjang",
-        // required : true
+        required : true
     },
     akreditasi : {
         type: mongoose.Types.ObjectId,
         ref: "akreditasi",
-        // required : true
+        required : true
     },
 
-    kondisi : {
-       bekerja : {
-        id_bidang : {
-            type : mongoose.Types.ObjectId,
-            ref: "bidang_pekerjaan",
-            required : true
-        },
-        id_kategori : {
-            type : mongoose.Types.ObjectId,
-            ref: "kategori_pekerjaan",
-            required : true
-        },
-        id_jenis : {
-            type : mongoose.Types.ObjectId,
-            ref: "jenis_pekerjaan",
-            required : true
-        }
-       },
-       wiraswasta : {
-        id_bidang : {
-            type : mongoose.Types.ObjectId,
-            ref: "bidang_usaha",
-            required : true
-        },
-        id_kategori : {
-            type : mongoose.Types.ObjectId,
-            ref: "kategori_usaha",
-            required : true
-        },
-        id_jenis : {
-            type : mongoose.Types.ObjectId,
-            ref: "jenis_usaha",
-            required : true
-        }
-        },
+    // kondisi : {
+    //    bekerja : {
+    //     id_bidang : {
+    //         type : mongoose.Types.ObjectId,
+    //         ref: "bidang_pekerjaan",
+    //         required : true
+    //     },
+    //     id_kategori : {
+    //         type : mongoose.Types.ObjectId,
+    //         ref: "kategori_pekerjaan",
+    //         required : true
+    //     },
+    //     id_jenis : {
+    //         type : mongoose.Types.ObjectId,
+    //         ref: "jenis_pekerjaan",
+    //         required : true
+    //     },
+    //     // id_posisi : {
+
+    //     // },
+    //     // id_bagian : {
+
+    //     // }
+    //    },
+    //    wiraswasta : {
+    //     id_bidang : {
+    //         type : mongoose.Types.ObjectId,
+    //         ref: "bidang_usaha",
+    //         required : true
+    //     },
+    //     id_kategori : {
+    //         type : mongoose.Types.ObjectId,
+    //         ref: "kategori_usaha",
+    //         required : true
+    //     },
+    //     id_jenis : {
+    //         type : mongoose.Types.ObjectId,
+    //         ref: "jenis_usaha",
+    //         required : true
+    //     }
+    //     },
+    // },
+    id_pengguna : {
+        type : mongoose.Types.ObjectId,
+        ref : "Pengguna",
+        required : true
     },
+    
     status : {
         type : String,
         required : true,
